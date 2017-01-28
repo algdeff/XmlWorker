@@ -46,56 +46,51 @@ public class XmlUtil {
             records.add(String.valueOf(i));
         }
 
-        System.out.println("total records prepaired: " + records.size());
-
-        int maxRecordsPerTask = 1000;
+        int threads = ConfigManager.getThreadPoolSize();
+        int maxRecordsPerTask = numberDatabaseRecords / threads;
+        System.out.println("Total records prepaired: " + records.size()
+                + " (" + maxRecordsPerTask + "*" + threads + " threads)");
 
         Iterator<String> iterator = records.iterator();
         List<String> task = new ArrayList<>();
 
         while (iterator.hasNext()) {
             task.add(iterator.next());
-            if (task.size() > maxRecordsPerTask) {
-                System.out.println("prepared task, size: " + task.size());
+            if (task.size() >= maxRecordsPerTask) {
+                System.out.println("prepared task thread, size: " + task.size());
                 ThreadPoolManager.getInstance().executeFutureTask(new GenerateDatabaseContentThread(task));
                 task.clear();
             }
         }
-        System.out.println("prepared task, remain task size: " + task.size());
         if (task.size() > 0) {
+            System.out.println("prepared task thread (remain), size: " + task.size());
             ThreadPoolManager.getInstance().executeFutureTask(new GenerateDatabaseContentThread(task));
             task.clear();
         }
 
-
         List<String> result = new ArrayList<>();
         int resultSize = 0;
+
         while (resultSize < numberDatabaseRecords) {
 
-            System.out.println("Reading result....");
-
+            System.out.println("Waiting result....");
             Future<ArrayList> future = ThreadPoolManager.getInstance().getCompletionFutureTask();
 
             try {
                 result.addAll(future.get());
                 //result = future.get();
-            } catch (InterruptedException ie) {
-                ie.printStackTrace();
-            } catch (ExecutionException ee) {
-                ee.printStackTrace();
+            } catch (ExecutionException | InterruptedException e) {
+                e.printStackTrace();
             }
-
             resultSize = result.size();
-            System.out.println("result complete - " + result.size() + "/" + resultSize);
-
+            System.out.println("result complete - " + resultSize + "/" + numberDatabaseRecords);
         }
 
-        Publisher.getInstance().sendPublisherEvent(Facade.CMD_DB_FLUSH);
         Publisher.getInstance().sendGroupEvent(Facade.EVENT_GROUP_LOGGER,
                 "Step2 COMPLETE");
     }
 
-    public void step3(Path outputFilename, String tableName, String fieldName) {
+    public void step3(Path outputFilename, String tableName, String fieldName, String orderBy) {
         Publisher.getInstance().sendPublisherEvent(Facade.CMD_LOGGER_ADD_LOG,
                 "Step3 begin.....");
 
@@ -103,9 +98,7 @@ public class XmlUtil {
         Element root = new Element(_rootEntry);
         xmlDoc.setRootElement(root);
 
-        List list = DatabaseManager.getInstance().getSortedResultset(tableName, fieldName, "asc");
-
-        //int numEntries = list.size();
+        List list = DatabaseManager.getInstance().getSortedResultset(tableName, fieldName, orderBy);
         Iterator iterator = list.iterator();
 
         while (iterator.hasNext()) {
@@ -116,25 +109,7 @@ public class XmlUtil {
             entry.addContent(field);
             root.addContent(entry);
         }
-
         saveFile(outputFilename, xmlDoc);
-
-//        OutputStream output = null;
-//        try {
-//            output = new BufferedOutputStream(new FileOutputStream(filename.toFile()));
-//            Format fmt = Format.getPrettyFormat();
-//            XMLOutputter serializer = new XMLOutputter(fmt);
-//            serializer.output(xmlDoc, System.out);
-//            serializer.output(xmlDoc, output);
-//        } catch (IOException e) {
-//            System.err.println(e);
-//        } finally {
-//            try {
-//                output.close();
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        }
 
         Publisher.getInstance().sendPublisherEvent(Facade.CMD_LOGGER_ADD_LOG,
                 "Step3 COMPLETE");
@@ -143,10 +118,8 @@ public class XmlUtil {
     public void step4(Path inputFile, Path outputFile) {
         Publisher.getInstance().sendPublisherEvent(Facade.CMD_LOGGER_ADD_LOG,
                 "Step4 begin.....");
-        ArrayList<String> resultset = new ArrayList<>();
 
         Document inputXmlDoc;
-
         Document outXmlDoc = new Document();
         Element outRoot = new Element(_rootEntry);
         outXmlDoc.setRootElement(outRoot);
@@ -160,7 +133,7 @@ public class XmlUtil {
 
             while (iterator.hasNext()) {
                 Element inputEntry = (Element)iterator.next();
-                //String id = entry.getAttributeValue("id");
+                //String contentNew = entry.getAttributeValue(_entryContent);
                 String inputContent = inputEntry.getChildText(_entryContent);
 
                 Element outEntry = new Element(_entryName);
@@ -177,6 +150,40 @@ public class XmlUtil {
         Publisher.getInstance().sendPublisherEvent(Facade.CMD_LOGGER_ADD_LOG,
                 "Step4 COMPLETE");
         //return resultset;
+    }
+
+
+    public Integer step5(Path inputFilename) {
+        Publisher.getInstance().sendPublisherEvent(Facade.CMD_LOGGER_ADD_LOG,
+                "Step5 begin.....");
+
+        Integer sum = 0;
+        Document inputXmlDoc;
+
+        SAXBuilder parser = new SAXBuilder();
+
+        try {
+            inputXmlDoc = parser.build(new File(inputFilename.toString()));
+            List elements = inputXmlDoc.getRootElement().getContent(new ElementFilter(_entryName));
+            Iterator iterator = elements.iterator();
+
+            while (iterator.hasNext()) {
+                Element inputEntry = (Element)iterator.next();
+                String contentFile2 = inputEntry.getAttributeValue(_entryContent);
+                String contentFile1 = inputEntry.getChildText(_entryContent);
+
+                sum += Integer.parseInt(contentFile1 != null ? contentFile1
+                        : contentFile2 == null ? "0" : contentFile2);
+            }
+
+        } catch (JDOMException | IOException e) {
+            e.printStackTrace();
+        }
+
+        Publisher.getInstance().sendPublisherEvent(Facade.CMD_DB_FLUSH);
+        Publisher.getInstance().sendPublisherEvent(Facade.CMD_LOGGER_ADD_LOG,
+                "Step5 COMPLETE");
+        return sum;
     }
 
 

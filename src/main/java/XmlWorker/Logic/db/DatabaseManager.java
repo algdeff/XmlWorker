@@ -104,7 +104,6 @@ public final class DatabaseManager implements IListener{
 
     private void flushCache() {
         System.out.println("Database manager: flush");
-        getSession().flush();
         closeSession();
     }
 

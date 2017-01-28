@@ -21,15 +21,16 @@ public class TestCase {
          */
         _processedPath = ConfigManager.getProcessedFilesPath();
         prepareWorkFolders();
+
         Path file1 = Paths.get(_processedPath.toString(), "1.xml");
         Path file2 = Paths.get(_processedPath.toString(), "2.xml");
 
-        final int N = ConfigManager.getNumGeneratedEntries();
-        String rootEntry = ConfigManager.getXmlRootEntry();
-        String entryName = ConfigManager.getXmlEntryName();
-        String entryContent = ConfigManager.getXmlEntryContent();
-        String databaseTable = ConfigManager.getHdbTableName();
-        String databaseField = ConfigManager.getHdbDataFieldName();
+        final int              N = ConfigManager.getNumGeneratedEntries();
+        String         rootEntry = ConfigManager.getXmlRootEntry();
+        String         entryName = ConfigManager.getXmlEntryName();
+        String      entryContent = ConfigManager.getXmlEntryContent();
+        String     databaseTable = ConfigManager.getHdbTableName();
+        String     databaseField = ConfigManager.getHdbDataFieldName();
 
 
         /**
@@ -47,10 +48,18 @@ public class TestCase {
         xmlUtil.step2(N);
 
         //  Step3 - Create XML from database entries and save this (to file1.xml)
-        xmlUtil.step3(file1, databaseTable, databaseField);
+        xmlUtil.step3(file1, databaseTable, databaseField, "asc");
 
         //  Step4 - Read data from file (1.xml) -> parse -> save result to 2.xml
         xmlUtil.step4(file1, file2);
+
+
+        /**
+         *  Step5 - Read data from entries (2.xml) -> parse it -> calculate sum of all entries
+         *  Result:
+         */
+        Integer sum = xmlUtil.step5(file2);
+        System.err.println("Total sum of all entries(" + file2.getFileName() + "): \n" + sum);
 
     }
 

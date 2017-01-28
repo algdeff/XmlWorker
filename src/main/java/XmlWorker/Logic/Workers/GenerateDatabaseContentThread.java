@@ -14,14 +14,12 @@ public class GenerateDatabaseContentThread implements Callable {
 
     public GenerateDatabaseContentThread(List<String> records) {
         _records = new ArrayList<>();
-        //_records = records;
-        _records.addAll(records);
+        _records.addAll(records); //_records = records; //invalid
     }
 
     @Override
     public List<String> call() {
-
-        System.out.println("inner Name:  total task size: " + _records.size() + "/");
+        //System.out.println("inner Name:  total task size: " + _records.size() + "/");
 
         for (String record : _records) {
             TestEntity databaseRecord = new TestEntity();
