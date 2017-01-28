@@ -1,0 +1,4 @@
+CREATE TABLE `test_db`.`test` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `FIELD` INT NULL,
+  PRIMARY KEY (`id`));

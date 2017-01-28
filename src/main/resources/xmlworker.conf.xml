@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmlworker-configuration>
+
+    <!--путь папки с корректно обработанными файлами-->
+    <processed_files_path>_xmls</processed_files_path>
+
+    <!--путь и имя файла с данными завершенных операций-->
+    <log_file_path_name>result.log</log_file_path_name>
+
+    <!--название сущности рабочей таблицы hibernate-->
+    <hdb_table_name>TestEntity</hdb_table_name>
+
+    <!--название рабочего поля в таблице-->
+    <hdb_data_field_name>field</hdb_data_field_name>
+
+    <!--название секции записи и входящих в нее полей-->
+    <xml_root_entry>Entries</xml_root_entry>
+    <xml_entry_name>Entry</xml_entry_name>
+    <xml_entry_content>field</xml_entry_content>
+
+    <!--N, число генерируемых записей-->
+    <num_generated_entries>2000</num_generated_entries>
+
+    <!--количество потоков для параллельных вычислений-->
+    <thread_pool_size>50</thread_pool_size>
+
+    <!--маски обрабатываемых файлов-->
+    <target_file_type_glob>*.{xml}</target_file_type_glob>
+
+</xmlworker-configuration>
