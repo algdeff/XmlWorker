@@ -6,11 +6,20 @@ import XmlWorker.Publisher.Interfaces.IPublisherEvent;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 public final class Publisher {
 
-    private Map<String, ListenerContext> _listeners; //Key = registered listener Class name from object.toString, Values = listener object included listener class link
-    private Map<String, List<String>> _listenersEventMap; //Key = eventName, Value = listener Class name;
+    /**
+     *                          _listeners
+     *      Key = registered listener Class name from object.toString,
+     *   Values = listener object included listener class link
+     *
+     *                      _listenersEventMap
+     *         Key = eventName, Value = listener Class name;
+     */
+    private static ConcurrentMap<String, ListenerContext> _listeners;
+    private static ConcurrentMap<String, List<String>> _listenersEventMap;
     private static volatile Publisher instance;
 
     private Publisher() {

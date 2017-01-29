@@ -4,7 +4,7 @@
     "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
 
-    <class name="XmlWorker.HibernateEntities.TestEntity" table="test" schema="test_dbase">
+    <class name="XmlWorker.HibernateEntities.TestEntity" table="test" schema="my_test">
         <id name="id">
             <column name="id" sql-type="int(11)"/>
         </id>

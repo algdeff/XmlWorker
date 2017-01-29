@@ -6,30 +6,31 @@
     <session-factory>
         <property name="hibernate.dialect">org.hibernate.dialect.MySQLInnoDBDialect</property>
         <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
-        <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/test_dbase?serverTimezone=UTC</property>
+        <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/my_test?useSSL=false&amp;serverTimezone=UTC</property>
         <property name="hibernate.current_session_context_class">thread</property>
         <property name="hibernate.connection.username">root</property>
         <property name="hibernate.connection.password">deff</property>
-        <property name="hibernate.show_sql">false</property>
         <property name="hibernate.hbm2ddl.auto">update</property>
         <property name="hibernate.c3p0.min_size">5</property>
-        <property name="hibernate.c3p0.max_size">20</property>
+        <property name="hibernate.c3p0.max_size">50</property>
         <property name="hibernate.c3p0.timeout">600</property>
         <property name="hibernate.c3p0.max_statements">50</property>
         <property name="hibernate.c3p0.idle_test_period">3000</property>
         <!--<property name="hibernate.connection.autocommit">false</property>-->
-        <!--<property name="hibernate.cache.provider_class">org.hibernate.cache.internal.StandardQueryCacheFactory</property>-->
-        <!--<property name="hibernate.connection.requireSSL">false</property>-->
-        <!--<property name="hibernate.connection.is-connection-validation-required">true&useSSL=false</property>-->
-        <!--<property name="oracle.net.ssl_client_authentication">false</property>-->
-        <property name="hibernate.connection.provider_class">org.hibernate.c3p0.internal.C3P0ConnectionProvider</property>
+        <!--<property name="hibernate.show_sql">true</property>-->
+        <!--<property name="hibernate.format_sql">true</property>-->
+
+        <property name="hibernate.cache.provider_class">org.hibernate.cache.ehcache.StrategyRegistrationProviderImpl</property>
+        <property name="hibernate.cache.region.factory_class">org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory</property>
+        <property name="hibernate.cache.use_second_level_cache">true</property>
+        <property name="hibernate.cache.use_query_cache">true</property>
+        <property name="hibernate.cache.use_structured_entries">true</property>
+        <property name="hibernate.cache.generate_statistics">true</property>
+
+        <!--<property name="hibernate.connection.provider_class">org.hibernate.c3p0.internal.C3P0ConnectionProvider</property>-->
 
         <mapping class="XmlWorker.HibernateEntities.TestEntity"/>
-        <mapping resource="HibernateMapping/TestEntity.hbm.xml"/>
-        <!-- <property name="connection.username"/> -->
-        <!-- <property name="connection.password"/> -->
+        <mapping resource="TestEntity.hbm.xml"/>
 
-        <!-- DB schema will be updated if needed -->
-        <!-- <property name="hbm2ddl.auto">update</property> -->
     </session-factory>
 </hibernate-configuration>

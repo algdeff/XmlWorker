@@ -30,11 +30,11 @@ public class TestCase {
         Path file2 = Paths.get(_processedPath.toString(), "2.xml");
 
         final int              N = ConfigManager.getNumGeneratedEntries();
-        String         rootEntry = ConfigManager.getXmlRootEntry();
-        String         entryName = ConfigManager.getXmlEntryName();
-        String      entryContent = ConfigManager.getXmlEntryContent();
-        String     databaseTable = ConfigManager.getHdbTableName();
-        String     databaseField = ConfigManager.getHdbDataFieldName();
+        String         rootEntry = ConfigManager.getXmlRootEntry(),
+                       entryName = ConfigManager.getXmlEntryName(),
+                    entryContent = ConfigManager.getXmlEntryContent(),
+                   databaseTable = ConfigManager.getHdbTableName(),
+                   databaseField = ConfigManager.getHdbDataFieldName();
 
 
         /**
@@ -110,4 +110,3 @@ public class TestCase {
     }
 
 }
-

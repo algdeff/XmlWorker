@@ -19,18 +19,18 @@ public final class ConfigManager {
      default: xmlworker.conf.xml
      */
 
-    private static final String CONFIG_FILE_PATH =             "xmlworker.conf.xml";
+    private static final String         CONFIG_FILE_PATH  =  "xmlworker.conf.xml",
 
-    private static final String OUTPUT_PATH =                  "processed_files_path";
-    private static final String LOG_FILE_PATH =                "log_file_path_name";
-    private static final String HDB_TABLE =                    "hdb_table_name";
-    private static final String HDB_DATA_FIELD =               "hdb_data_field_name";
-    private static final String XML_ROOT_ENTRY =               "xml_root_entry";
-    private static final String XML_ENTRY_NAME =               "xml_entry_name";
-    private static final String XML_ENTRY_CONTENT =            "xml_entry_content";
-    private static final String GENERATED_N =                  "num_generated_entries";
-    private static final String THREAD_POOL_SIZE =             "thread_pool_size";
-    private static final String TARGET_FILE_TYPE_GLOB =        "target_file_type_glob";
+                                             OUTPUT_PATH  =  "processed_files_path",
+                                           LOG_FILE_PATH  =  "log_file_path_name",
+                                               HDB_TABLE  =  "hdb_table_name",
+                                          HDB_DATA_FIELD  =  "hdb_data_field_name",
+                                          XML_ROOT_ENTRY  =  "xml_root_entry",
+                                          XML_ENTRY_NAME  =  "xml_entry_name",
+                                       XML_ENTRY_CONTENT  =  "xml_entry_content",
+                                             GENERATED_N  =  "num_generated_entries",
+                                        THREAD_POOL_SIZE  =  "thread_pool_size",
+                                   TARGET_FILE_TYPE_GLOB  =  "target_file_type_glob";
 
     private static final ConcurrentHashMap<String, String> _properties;
 

@@ -1,4 +1,5 @@
-CREATE TABLE `test_db`.`test` (
+CREATE SCHEMA `my_test` ;
+CREATE TABLE `my_test`.`test` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `FIELD` INT NULL,
   PRIMARY KEY (`id`));

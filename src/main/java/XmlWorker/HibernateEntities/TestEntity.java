@@ -1,12 +1,18 @@
 package XmlWorker.HibernateEntities;
 
+import org.hibernate.annotations.*;
+import org.hibernate.annotations.Cache;
+
 import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
 /**
  * Created by DeFF on 27.01.2017.
  */
 @Entity
-@Table(name = "test", schema = "test_dbase", catalog = "")
+@Table(name = "test")
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class TestEntity {
     private int id;
     private Integer field;
