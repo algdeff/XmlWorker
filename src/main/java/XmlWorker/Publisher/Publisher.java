@@ -5,6 +5,7 @@ import XmlWorker.Publisher.Interfaces.IListener;
 import XmlWorker.Publisher.Interfaces.IPublisherEvent;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public final class Publisher {
 
@@ -13,8 +14,8 @@ public final class Publisher {
     private static volatile Publisher instance;
 
     private Publisher() {
-        _listeners = new HashMap<>();
-        _listenersEventMap = new HashMap<>();
+        _listeners = new ConcurrentHashMap<>();
+        _listenersEventMap = new ConcurrentHashMap<>();
 
     }
 
@@ -147,7 +148,7 @@ public final class Publisher {
         List<String> listeners = _listenersEventMap.get(eventName);
 
         if (listeners == null) {
-            System.out.println("This event is not registered");
+            System.out.println("Publisher: this event is not registered");
             return;
         }
 

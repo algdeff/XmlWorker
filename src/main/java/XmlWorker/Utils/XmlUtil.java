@@ -57,13 +57,15 @@ public class XmlUtil {
         while (iterator.hasNext()) {
             task.add(iterator.next());
             if (task.size() >= maxRecordsPerTask) {
-                System.out.println("prepared task thread, size: " + task.size());
+                Publisher.getInstance().sendPublisherEvent(Facade.CMD_LOGGER_ADD_RECORD,
+                        "prepared task thread, size: " + task.size());
                 ThreadPoolManager.getInstance().executeFutureTask(new GenerateDatabaseContentThread(task));
                 task.clear();
             }
         }
         if (task.size() > 0) {
-            System.out.println("prepared task thread (remain), size: " + task.size());
+            Publisher.getInstance().sendPublisherEvent(Facade.CMD_LOGGER_ADD_RECORD,
+                    "prepared task thread (remain), size: " + task.size());
             ThreadPoolManager.getInstance().executeFutureTask(new GenerateDatabaseContentThread(task));
             task.clear();
         }
@@ -73,7 +75,8 @@ public class XmlUtil {
 
         while (resultSize < numberDatabaseRecords) {
 
-            System.out.println("Waiting result....");
+            Publisher.getInstance().sendPublisherEvent(Facade.CMD_LOGGER_ADD_RECORD,
+                    "Waiting result....");
             Future<ArrayList> future = ThreadPoolManager.getInstance().getCompletionFutureTask();
 
             try {
@@ -83,7 +86,8 @@ public class XmlUtil {
                 e.printStackTrace();
             }
             resultSize = result.size();
-            System.out.println("result complete - " + resultSize + "/" + numberDatabaseRecords);
+            Publisher.getInstance().sendPublisherEvent(Facade.CMD_LOGGER_ADD_RECORD,
+                    "result complete - " + resultSize + "/" + numberDatabaseRecords);
         }
 
         Publisher.getInstance().sendGroupEvent(Facade.EVENT_GROUP_LOGGER,
@@ -153,11 +157,11 @@ public class XmlUtil {
     }
 
 
-    public Integer step5(Path inputFilename) {
+    public long step5(Path inputFilename) {
         Publisher.getInstance().sendPublisherEvent(Facade.CMD_LOGGER_ADD_LOG,
                 "Step5 begin.....");
 
-        Integer sum = 0;
+        long sum = 0L;
         Document inputXmlDoc;
 
         SAXBuilder parser = new SAXBuilder();
@@ -180,7 +184,7 @@ public class XmlUtil {
             e.printStackTrace();
         }
 
-        Publisher.getInstance().sendPublisherEvent(Facade.CMD_DB_FLUSH);
+        //Publisher.getInstance().sendPublisherEvent(Facade.CMD_DB_FLUSH);
         Publisher.getInstance().sendPublisherEvent(Facade.CMD_LOGGER_ADD_LOG,
                 "Step5 COMPLETE");
         return sum;

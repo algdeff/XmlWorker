@@ -2,7 +2,6 @@ package XmlWorker.Logic.Workers;
 
 import XmlWorker.Facade;
 import XmlWorker.Logic.ConfigManager;
-import XmlWorker.Logic.ThreadPoolManager;
 import XmlWorker.Publisher.Interfaces.IListener;
 import XmlWorker.Publisher.Interfaces.IPublisherEvent;
 import XmlWorker.Publisher.Publisher;
@@ -14,12 +13,12 @@ import java.nio.file.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 
 public class LogFileWorker implements IListener {
 
     private Path _logFilePath;
+    private static BlockingQueue<List<String>> _queue;
 
     private static boolean _inited = false;
 
@@ -37,42 +36,57 @@ public class LogFileWorker implements IListener {
     public void init() {
         if (_inited) return;
 
+        _queue = new LinkedBlockingQueue<>();
+
         _logFilePath = ConfigManager.getLogFilePath();
         _inited = true;
         registerOnPublisher();
-        //startAutoLoggingRecords();
+        startQueueMonitor();
     }
 
-    private void startAutoLoggingRecords() {
 
-        while (true) {
-
-            Future<ArrayList> future = ThreadPoolManager.getInstance().getCompletionFutureTask();
-            List<String> result = new ArrayList<>();
-            try {
-                result = future.get();
-            } catch (InterruptedException ie) {
-                ie.printStackTrace();
-            } catch (ExecutionException ee) {
-                ee.printStackTrace();
-            }
-
-            addRecords(result);
-        }
-
-    }
 
     private void addLog(String message) {
-        addRecord(dateTimeNow() + " - " + message);
+        addRecord(getDateTimeNow() + " - " + message);
     }
 
     private void addRecord(String record) {
         List<String> records = new ArrayList<>();
         records.add(record);
-        addRecords(records);
+        addRecord(records);
     }
 
-    private void addRecords(List<String> records) {
+    private void addRecord(List<String> records) {
+        try {
+//            System.out.println("QUEUE1: put" + records.toString());
+            _queue.put(records);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+//        System.out.println("QUEUE2: put" + records.toString());
+    }
+
+    private void startQueueMonitor() {
+
+        Thread fileWorkerThread = new Thread(() -> {
+            while (true) {
+
+                List<String> result = new ArrayList<>();
+                try {
+//                    System.out.println("QUEUE1: take" + result.toString());
+                    result = _queue.take();
+                } catch (InterruptedException ie) {
+                    ie.printStackTrace();
+                }
+                saveRecord(result);
+//                System.out.println("QUEUE2: take" + result.toString());
+            }
+        });
+        fileWorkerThread.start();
+
+    }
+
+    private void saveRecord(List<String> records) {
 
         try {
             Files.write(_logFilePath, records, StandardCharsets.UTF_8,
@@ -84,7 +98,7 @@ public class LogFileWorker implements IListener {
 
     }
 
-    private String dateTimeNow() {
+    private String getDateTimeNow() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyy-MM-dd HH:mm:ss");
         return LocalDateTime.now().format(formatter);
     }
@@ -109,22 +123,22 @@ public class LogFileWorker implements IListener {
 //                + " / " + publisherEvent.getType() + ":\n" + publisherEvent.getBody().toString());
         if (publisherEvent.getType().equals(Facade.EVENT_TYPE_GROUP)) {
             addLog(publisherEvent.getBody().toString());
-            System.err.println("Logger received group event ("
+            System.err.println(getDateTimeNow() + " - Logger received group event ("
                     + publisherEvent.getGroupName() + "): \n" + publisherEvent.getBody().toString());
         }
 
         switch (publisherEvent.getName()) {
             case Facade.CMD_LOGGER_ADD_LOG: {
                 addLog(publisherEvent.getBody().toString());
-                System.out.println("Logger event ("
+                System.err.println(getDateTimeNow() + " - Logger event ("
                         + publisherEvent.getName() + "): \n" + publisherEvent.getBody().toString());
                 break;
 
             }
             case Facade.CMD_LOGGER_ADD_RECORD: {
                 addRecord(publisherEvent.getBody().toString());
-                System.out.println("Logger event ("
-                        + publisherEvent.getName() + "): \n" + publisherEvent.getBody().toString());
+//                System.out.println("Logger event ("
+//                        + publisherEvent.getName() + "): \n" + publisherEvent.getBody().toString());
                 break;
 
             }

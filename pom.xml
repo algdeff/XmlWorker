@@ -6,7 +6,7 @@
 
     <groupId>algdeff</groupId>
     <artifactId>XmlWorker</artifactId>
-    <version>0.1-PREALPHA</version>
+    <version>0.3-PREALPHA</version>
     <!--<packaging>jar</packaging>-->
 
     <properties>
@@ -62,7 +62,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>XmlMonitor.ServerStarter</mainClass>
+                            <mainClass>XmlWorker.ServerStarter</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

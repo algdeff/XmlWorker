@@ -19,7 +19,7 @@
     <xml_entry_content>field</xml_entry_content>
 
     <!--N, число генерируемых записей-->
-    <num_generated_entries>2000</num_generated_entries>
+    <num_generated_entries>1000</num_generated_entries>
 
     <!--количество потоков для параллельных вычислений-->
     <thread_pool_size>50</thread_pool_size>

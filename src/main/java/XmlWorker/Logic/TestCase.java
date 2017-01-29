@@ -1,10 +1,14 @@
 package XmlWorker.Logic;
 
+import XmlWorker.Facade;
 import XmlWorker.Logic.db.DatabaseManager;
+import XmlWorker.Publisher.Publisher;
 import XmlWorker.ServerStarter;
 import XmlWorker.Utils.XmlUtil;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.*;
 
 public class TestCase {
@@ -58,8 +62,25 @@ public class TestCase {
          *  Step5 - Read data from entries (2.xml) -> parse it -> calculate sum of all entries
          *  Result:
          */
-        Integer sum = xmlUtil.step5(file2);
-        System.err.println("Total sum of all entries(" + file2.getFileName() + "): \n" + sum);
+        Path inputFile = file2;
+        long sum = xmlUtil.step5(inputFile);
+
+        String message = "Total sum of all entries(" + inputFile.getFileName() + "): \n" + sum;
+        System.out.println(message);
+        Publisher.getInstance().sendPublisherEvent(Facade.CMD_LOGGER_ADD_LOG, message);
+
+        //  Program exit
+        System.out.println("Do you want to terminate the program?");
+        BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
+        try {
+            String keyStream = stdin.readLine();
+            if (keyStream.equals("y") || keyStream.equals("Y")) {
+                System.out.println("EXIT");
+                ServerStarter.stopAndExit(0);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
 
